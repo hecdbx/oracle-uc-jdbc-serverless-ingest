@@ -1,0 +1,53 @@
+# One task per Oracle table. Tasks have no dependencies, so they all run in parallel on serverless compute.
+# Job parameters are passed to every task; each task only adds its own `table`.
+# To add a table: copy a task block and change task_key + table.
+resources:
+  jobs:
+    oracle_synth_bank_ingest:
+      name: oracle_synth_bank_ingest
+      max_concurrent_runs: 1
+      parameters:
+        - name: connection
+          default: oracle-jdbc-arabic
+        - name: source_schema
+          default: SYNTH_BANK
+        - name: target_catalog
+          default: hec_demo_gcp
+        - name: target_schema
+          default: oracle_datasets
+      tasks:
+        - task_key: branches
+          notebook_task:
+            notebook_path: ../src/ingest_table.py
+            base_parameters: {table: BRANCHES}
+          max_retries: 1
+        - task_key: customers
+          notebook_task:
+            notebook_path: ../src/ingest_table.py
+            base_parameters: {table: CUSTOMERS}
+          max_retries: 1
+        - task_key: accounts
+          notebook_task:
+            notebook_path: ../src/ingest_table.py
+            base_parameters: {table: ACCOUNTS}
+          max_retries: 1
+        - task_key: cards
+          notebook_task:
+            notebook_path: ../src/ingest_table.py
+            base_parameters: {table: CARDS}
+          max_retries: 1
+        - task_key: finance_contracts
+          notebook_task:
+            notebook_path: ../src/ingest_table.py
+            base_parameters: {table: FINANCE_CONTRACTS}
+          max_retries: 1
+        - task_key: transactions
+          notebook_task:
+            notebook_path: ../src/ingest_table.py
+            base_parameters: {table: TRANSACTIONS}
+          max_retries: 1
+        - task_key: complaints
+          notebook_task:
+            notebook_path: ../src/ingest_table.py
+            base_parameters: {table: COMPLAINTS}
+          max_retries: 1
